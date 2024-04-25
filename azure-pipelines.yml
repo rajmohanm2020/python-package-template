@@ -28,4 +28,25 @@ steps:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'drop'
       publishLocation: 'Container'
+  
+  - task: TwineAuthenticate@1
+    inputs:
+      artifactFeed: raw_coding_1     
+  - script: |
+      pip install build
+      pip install twine
+    displayName: 'Install build and twine'
+
+  - script: |
+      python -m build -w
+    displayName: 'Python build'
+
+  - task: TwineAuthenticate@1
+    inputs:
+      artifactFeed: raw_coding_1
+    displayName: 'Twine Authenticate'
+
+  - script: |
+      python -m twine upload -r raw_coding_1 --config-file $(PYPIRC_PATH) dist/*.whl
+    displayName: 'Upload to feed'
 
